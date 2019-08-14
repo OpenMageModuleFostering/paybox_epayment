@@ -121,6 +121,7 @@ class Paybox_Epayment_Block_Info extends Mage_Payment_Block_Info {
             'first' => $this->__('Not achieved'),
             'second' => $this->__('Not achieved'),
             'third' => $this->__('Not achieved'),
+            'fourth' => $this->__('Not achieved'),
         );
 
         $data = $info->getPbxepFirstPayment();
@@ -140,6 +141,12 @@ class Paybox_Epayment_Block_Info extends Mage_Payment_Block_Info {
             $data = unserialize($data);
             $date = preg_replace('/^([0-9]{2})([0-9]{2})([0-9]{4})$/', '$1/$2/$3', $data['date']);
             $result['third'] = $this->__('%s (%s)', $data['amount'] / 100.0, $date);
+        }
+        $data = $info->getPbxepFourthPayment();
+        if (!empty($data)) {
+            $data = unserialize($data);
+            $date = preg_replace('/^([0-9]{2})([0-9]{2})([0-9]{4})$/', '$1/$2/$3', $data['date']);
+            $result['fourth'] = $this->__('%s (%s)', $data['amount'] / 100.0, $date);
         }
         return $result;
     }

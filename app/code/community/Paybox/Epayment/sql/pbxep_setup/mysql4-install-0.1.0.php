@@ -38,6 +38,9 @@ $defs = array(
 	'pbxep_third_payment' => array(
 		'type' => 'text',
 	),
+	'pbxep_fourth_payment' => array(
+		'type' => 'text',
+	),
 );
 
 $entity = 'order_payment';
@@ -45,6 +48,38 @@ $entity = 'order_payment';
 foreach ($defs as $name => $def) {
 	$installer->addAttribute('order_payment', $name, $def);
 }
+
+// Required tables
+$statusStateTable = $installer->getTable('sales/order_status_state');
+
+ // Insert statuses
+$installer->getConnection()->insertArray(
+    $statusTable,
+    array(
+        'status',
+        'label'
+    ),
+    array(
+        array('status' => 'pbxep_partiallypaid', 'label' => 'Paid Partially'),
+    )
+);
+ 
+// Insert states and mapping of statuses to states
+$installer->getConnection()->insertArray(
+    $statusStateTable,
+    array(
+        'status',
+        'state',
+        'is_default'
+    ),
+    array(
+        array(
+            'status' => 'pbxep_partiallypaid',
+            'state' => 'processing',
+            'is_default' => 1
+        ),
+    )
+);
 
 // Finalization
 $installer->endSetup();

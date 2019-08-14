@@ -26,7 +26,7 @@ abstract class Paybox_Epayment_Model_Payment_Abstract extends Mage_Payment_Model
     protected $_canVoid = false;
     protected $_canUseInternal = false;
     protected $_canUseCheckout = true;
-    protected $_canUseForMultishipping = false;
+    protected $_canUseForMultishipping = true;
     protected $_canSaveCc = false;
     protected $_canFetchTransactionInfo = false;
     // Fake to avoid calling au authorize ou capture before redirect

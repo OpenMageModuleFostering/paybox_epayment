@@ -17,6 +17,11 @@ class Paybox_Epayment_Model_Payment_Threetime extends Paybox_Epayment_Model_Paym
     protected $_allowRefund = true;
     protected $_3dsAllowed = true;
 
+    public function getConfigPaidPartiallyStatus() {
+        return $this->getConfigData('status/partiallypaid');
+    }
+
+
     public function checkIpnParams(Mage_Sales_Model_Order $order, array $params) {
         if (!isset($params['amount'])) {
             $message = $this->__('Missing amount parameter');
@@ -31,9 +36,9 @@ class Paybox_Epayment_Model_Payment_Threetime extends Paybox_Epayment_Model_Paym
     }
 
     public function onIPNSuccess(Mage_Sales_Model_Order $order, array $data) {
-        $this->logDebug(sprintf('Order %s: Threetime IPN', $order->getIncrementId()));
 
         $payment = $order->getPayment();
+        $this->logDebug(sprintf('Order %s: %s-time IPN', $order->getIncrementId(),$this->getNbtimes()));
 
         // Message
 
@@ -47,10 +52,10 @@ class Paybox_Epayment_Model_Payment_Threetime extends Paybox_Epayment_Model_Paym
             $this->logDebug(sprintf('Order %s: First payment', $order->getIncrementId()));
 
             // Message
-            $message = 'Payment was authorized and captured by Paybox.';
+            $message = 'First Payment was authorized and captured by Paybox.';
 
             // Status
-            $status = $this->getConfigPaidStatus();
+            $status = $this->getConfigPaidpartiallyStatus();
             $state = Mage_Sales_Model_Order::STATE_PROCESSING;
             $allowedStates = array(
                 Mage_Sales_Model_Order::STATE_NEW,
@@ -59,39 +64,57 @@ class Paybox_Epayment_Model_Payment_Threetime extends Paybox_Epayment_Model_Paym
             );
             $current = $order->getState();
             $message = $this->__($message);
-            if (in_array($current, $allowedStates)) {
-                $order->setState($state, $status, $message);
-            } else {
-                $order->addStatusHistoryComment($message);
-            }
 
             // Additional informations
             $payment->setPbxepFirstPayment(serialize($data));
             $payment->setPbxepAuthorization(serialize($data));
+			
+			$order->sendNewOrderEmail();
 
+				
+            if (in_array($current, $allowedStates)) {
+                $order->setState($state, $status, $message);
+				$this->logDebug(sprintf('Order %s: changing state from: %s to %s', $order->getIncrementId(), $current, $status));
+            } else {
+                $order->addStatusHistoryComment($message);
+            }
             $this->logDebug(sprintf('Order %s: %s', $order->getIncrementId(), $message));
 
-            // Create invoice is needed
-            $invoice = $this->_createInvoice($order, $txn);
         } else if (is_null($payment->getPbxepSecondPayment())) {
             // Message
             $message = 'Second payment was captured by Paybox.';
             $order->addStatusHistoryComment($message);
-
             // Additional informations
-            $payment->setPbxepSecondPayment(serialize($data));
+			$payment->setPbxepSecondPayment(serialize($data));				
             $this->logDebug(sprintf('Order %s: %s', $order->getIncrementId(), $message));
-        } else if (is_null($payment->getPbxepThirdPayment())) {
+			if($payment->getNbtimes() === 2){
+				$this->_createInvoice($order, $txn);
+				// Client notification if needed
+			}
+        } else if (is_null($payment->getPbxepThirdPayment()) && $this->getNbtimes()>=3) {
             // Message
             $message = 'Third payment was captured by Paybox.';
             $order->addStatusHistoryComment($message);
 
             // Additional informations
-            $payment->setPbxepThirdPayment(serialize($data));
+			$payment->setPbxepThirdPayment(serialize($data));
             $this->logDebug(sprintf('Order %s: %s', $order->getIncrementId(), $message));
+			if($this->getNbtimes() === 3){
+				$this->_createInvoice($order, $txn);
+				// Client notification if needed
+			}
+        } else if (is_null($payment->getPbxepFourthPayment()) && $this->getNbtimes()==4) {
+            // Message
+            $message = 'Fourth payment was captured by Paybox.';
+            $order->addStatusHistoryComment($message);
+
+			// Client notification if needed
+            $this->logDebug(sprintf('Order %s: %s', $order->getIncrementId(), $message));
+            // Additional informations
+			$this->_createInvoice($order, $txn);
         } else {
-            $this->logDebug(sprintf('Order %s: Invalid three-time payment status', $order->getIncrementId()));
-            Mage::throwException('Invalid three-time payment status');
+            $this->logDebug(sprintf('Order %s: Invalid %s-time payment status', $order->getIncrementId(),$this->getNbtimes()));
+            Mage::throwException('Invalid '.$this->getNbtimes().'-time payment status');
         }
         $data['status'] = $message;
 
@@ -103,9 +126,15 @@ class Paybox_Epayment_Model_Payment_Threetime extends Paybox_Epayment_Model_Paym
         if (isset($invoice)) {
             $transactionSave->addObject($invoice);
         }
+        $order->save();
         $transactionSave->save();
-
-        // Client notification if needed
-        $order->sendNewOrderEmail();
     }
+	public function getNbtimes(){
+		return $this->getConfigData('nbtimes');
+	}
+	public function getNbDays(){
+		return $this->getConfigData('nbdays');
+	}
+
+	
 }

@@ -11,7 +11,7 @@
  */
 
 class Paybox_Epayment_Model_Paybox {
-    private $_currencyDecimals = array(
+    protected $_currencyDecimals = array(
         '008' => 2,
         '012' => 2,
         '032' => 2,
@@ -184,7 +184,7 @@ class Paybox_Epayment_Model_Paybox {
         '998' => 2,
     );
 
-    private $_errorCode = array(
+    protected $_errorCode = array(
         '00000' => 'Successful operation',
         '00001' => 'Payment system not available',
         '00003' => 'Paybor error',
@@ -203,7 +203,7 @@ class Paybox_Epayment_Model_Paybox {
         '00040' => 'No 3-D Secure',
     );
 
-    private $_resultMapping = array(
+    protected $_resultMapping = array(
         'M' => 'amount',
         'R' => 'reference',
         'T' => 'transaction',
@@ -229,7 +229,6 @@ class Paybox_Epayment_Model_Paybox {
         'Y' => 'country',
         'Z' => 'paymentIndex',
     );
-
     protected function _buildUrl($url) {
         $url = Mage::getUrl($url, array('_secure' => true));
         $url = Mage::getModel('core/url')->sessionUrlVar($url);
@@ -345,8 +344,8 @@ class Paybox_Epayment_Model_Paybox {
         $orderAmount = $order->getBaseGrandTotal();
         $amountScale = $this->_currencyDecimals[$values['PBX_DEVISE']];
         $amountScale = pow(10, $amountScale);
-        if ($payment->getCode() == 'pbxep_threetime') {
-            $amounts = $this->computeThreetimePayments($orderAmount, $amountScale);
+        if (($payment->getCode() == 'pbxep_threetime') || ($payment->getCode() == 'pbxep_threetimeprivate') ) {
+            $amounts = $this->computeNtimePayments($orderAmount, $amountScale, $payment->getNbtimes(), $payment->getNbdays());
             foreach ($amounts as $k => $v) {
                 $values[$k] = $v;
             }
@@ -451,28 +450,62 @@ class Paybox_Epayment_Model_Paybox {
         }
 
         // Here, there's a problem
-        throw new Exception($this->l('Paybox not available. Please try again later.'));
+        Mage::throwException(Mage::helper('pbxep')->__('Paybox not available. Please try again later.'));
     }
+	 
+	 
+	
+	protected function cleanupPeriodicity($periodicity){
+		if (is_numeric($periodicity)) {
+			$string=$periodicity." day";
+		}else{
+					$Nbdays = 	strtolower($periodicity);
+					$count=0;
+					$days = 	array("jours","jour","días","día","tage","tag");
+					$string = 	str_replace($days,"day",$Nbdays,$count);
+					$weeks= 	array("semaines","semaine", "semanas", "semana", "wochen", "woche");
+					if($count==0)$string = 	str_replace($weeks,"week",$Nbdays,$count);	
+					$months= 	array("mois","meses", "mes", "monate",  "monat");			
+					if($count==0)$string = 	str_replace($months,"month",$Nbdays,$count);	
+				
+		}
+		return $string;
+	}
 
-    public function computeThreetimePayments($orderAmount, $amountScale) {
-        $values = array();
+	
+    public function computeNtimePayments($orderAmount, $amountScale,$Nbtimes = null,$Nbdays = null ) {
+
+//	echo "<b>going for ".$Nbtimes." times evry ".$Nbdays." days</b>";
+
+		if ($Nbtimes == null && $Nbdays	== null){
+			
+		}
+		
+		$values = array();
         // Compute each payment amount
-        $step = round($orderAmount * $amountScale / 3);
-        $firstStep = ($orderAmount * $amountScale) - 2 * $step;
+        $step = round($orderAmount * $amountScale / $Nbtimes);
+        $firstStep = ($orderAmount * $amountScale) - ($Nbtimes-1) * $step;
         $values['PBX_TOTAL'] = sprintf('%03d', $firstStep);
-        $values['PBX_2MONT1'] = sprintf('%03d', $step);
-        $values['PBX_2MONT2'] = sprintf('%03d', $step);
-
+        for($i=1;$i<$Nbtimes;$i++){
+			$values['PBX_2MONT'.$i] = sprintf('%03d', $step);
+		}
         // Payment dates
-        $now = new DateTime();
-        $now->modify('1 month');
-        $values['PBX_DATE1'] = $now->format('d/m/Y');
-        $now->modify('1 month');
-        $values['PBX_DATE2'] = $now->format('d/m/Y');
-
-
-        // Force validity date of card
-        $values['PBX_DATEVALMAX'] = $now->format('ym');
+		$now = new DateTime();
+		$d = DateTime::createFromFormat('Y-m-d', $Nbdays);
+		
+		if($Nbtimes==2 && ($d) && ($d->format('Y-m-d') == $Nbdays)){
+			$values['PBX_DATE1']=$d->format('d/m/Y');
+			$now = $d;
+		}else{
+			$Nbdays = $this->cleanupPeriodicity($Nbdays);
+			 for($i=1;$i<$Nbtimes;$i++){
+				$now->modify($Nbdays);
+				$values['PBX_DATE'.$i] = $now->format('d/m/Y');;
+			}
+		}
+		// Force validity date of card
+		$values['PBX_DATEVALMAX'] = $now->format('ym');
+//		var_dump($values);
         return $values;
     }
 

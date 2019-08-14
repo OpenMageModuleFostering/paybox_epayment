@@ -223,8 +223,11 @@
                 <title>Paiement en trois fois par carte bancaire</title>
                 <allowspecific>0</allowspecific>
                 <cctypes>CB,VISA,EUROCARD_MASTERCARD,E_CARD</cctypes>
+				<nbtimes>2</nbtimes>
+                <nbdays>1 month</nbdays>
                 <status>
                     <intermediary>pbxep_intermediary</intermediary>
+                    <partiallypaid>pbxep_partiallypaid</partiallypaid>
                     <paid>pbxep_paid</paid>
                 </status>
                 <action>immediate</action>
@@ -256,6 +259,29 @@
                     </E_CARD>
                 </cards>
             </pbxep_threetime>
+            <pbxep_threetimeprivate>
+                <active>1</active>
+                <model>pbxep/payment_threetimeprivate</model>
+                <title>Paiement en trois fois par carte american express</title>
+                <allowspecific>0</allowspecific>
+                <cctypes>AMEX</cctypes>
+				<nbtimes>2</nbtimes>
+                <nbdays>1 month</nbdays>
+				<status>
+                    <intermediary>pbxep_intermediary</intermediary>
+                    <partiallypaid>pbxep_partiallypaid</partiallypaid>
+                    <paid>pbxep_paid</paid>
+                </status>
+                <action>immediate</action>
+                <cards>
+                    <AMEX>
+                        <label>American Express</label>
+                        <image>images/pbxep/amex.45.png</image>
+                        <payment>CARTE</payment>
+                        <card>AMEX</card>
+                    </AMEX>
+                </cards>
+            </pbxep_threetimeprivate>			
             <pbxep_private>
                 <active>0</active>
                 <model>pbxep/payment_private</model>
@@ -451,7 +477,7 @@
             <pbxep_kwixo_onexrnp>
                 <active>0</active>
                 <model>pbxep/payment_kwixo_onexrnp</model>
-                <title>Paiement à la réception avec Kwixo</title>
+                <title>Paiement Ã  la réception avec Kwixo</title>
                 <allowspecific>0</allowspecific>
                 <action>immediate</action>
                 <status>

@@ -12,11 +12,11 @@
 
 class Paybox_Epayment_PaymentController extends Mage_Core_Controller_Front_Action {
 
-    private function _404() {
+    protected function _404() {
         $this->_forward('defaultNoRoute');
     }
 
-    private function _loadQuoteFromOrder(Mage_Sales_Model_Order $order) {
+    protected function _loadQuoteFromOrder(Mage_Sales_Model_Order $order) {
         $quoteId = $order->getQuoteId();
 
         // Retrieves quote
@@ -29,7 +29,7 @@ class Paybox_Epayment_PaymentController extends Mage_Core_Controller_Front_Actio
         return $quote;
     }
 
-    private function _getOrderFromParams(array $params) {
+    protected function _getOrderFromParams(array $params) {
         // Retrieves order
         $paybox = $this->getPaybox();
         $order = $paybox->untokenizeOrder($params['reference']);
