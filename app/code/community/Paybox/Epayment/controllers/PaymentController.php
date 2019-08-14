@@ -149,16 +149,16 @@ class Paybox_Epayment_PaymentController extends Mage_Core_Controller_Front_Actio
 
             // IP not allowed
             $config = $this->getConfig();
-            $allowedIps = explode(',', $config->getAllowedIps());
-            $currentIp = Mage::helper('core/http')->getRemoteAddr();
-            if (!in_array($currentIp, $allowedIps)) {
+           // $allowedIps = explode(',', $config->getAllowedIps());
+           // $currentIp = Mage::helper('core/http')->getRemoteAddr();
+           /* if (!in_array($currentIp, $allowedIps)) {
                 $message = $this->__('IPN call from %s not allowed.', $currentIp);
                 $order->addStatusHistoryComment($message);
                 $order->save();
                 $this->logFatal(sprintf('Order %s: (IPN) %s', $order->getIncrementId(), $message));
                 $message = 'Access denied to %s';
                 Mage::throwException($this->__($message, $currentIp));
-            }
+            }*/
 
             // Call payment method
             $method = $order->getPayment()->getMethodInstance();
