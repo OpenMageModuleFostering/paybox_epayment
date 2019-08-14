@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/Paybox_epayment",
+    "type": "magento-module",
+    "license": "Open-Software-License-(OSL-3.0)",
+    "homepage": "",
+    "description": "En une seule intégration, proposez de nombreux moyens de paiement, disposez d’une page de paiement sécurisée personnalisée, multi-langues et multi-devises et proposez du débit à validation de commande, à l’expédition ou encore en 3 fois sans frais à vos clients.",
+    "authors": [
+    {
+        "name": "Paybox",
+        "email": "magento@paybox.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
