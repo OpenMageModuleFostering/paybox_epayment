@@ -789,11 +789,6 @@ abstract class Paybox_Epayment_Model_Payment_Abstract extends Mage_Payment_Model
         // Status and message
         $current = $order->getState();
         $message = $this->__($message);
-        if (in_array($current, $allowedStates)) {
-            $order->setState($state, $status, $message);
-        } else {
-            $order->addStatusHistoryComment($message);
-        }
 
         // Create transaction
         $type = $withCapture ?
@@ -812,8 +807,17 @@ abstract class Paybox_Epayment_Model_Payment_Abstract extends Mage_Payment_Model
             $payment->setPbxepCapture(serialize($data));
             $this->_createInvoice($order, $txn);
         }
-        $order->save();
+
+        // Set status
+        if (in_array($current, $allowedStates)) {
+            $order->setState($state, $status, $message);
+            $this->logDebug(sprintf('Order %s: Change status to %s', $order->getIncrementId(), $status));
+        } else {
+            $order->addStatusHistoryComment($message);
+        }
         $this->logDebug(sprintf('Order %s: %s', $order->getIncrementId(), $message));
+
+        $order->save();
 
         // Client notification if needed
         $order->sendNewOrderEmail();
