@@ -29,6 +29,6 @@ class Paybox_Epayment_Adminhtml_PbxepController extends Mage_Adminhtml_Controlle
             Mage::getSingleton('adminhtml/session')->setCommentText($this->__('Unable to create an invoice.'));
         }
 
-        $this->_redirect('/sales_order/view', array('order_id' => $orderId));
+        $this->_redirect('*/sales_order/view', array('order_id' => $orderId));
     }
 }

@@ -103,6 +103,7 @@
                             <label>HMAC</label>
                             <comment><![CDATA[Secrete HMAC key to create using the Paybox interface.]]></comment>
                             <frontend_type>text</frontend_type>
+                            <backend_model>pbxep/admin_backend_encrypted</backend_model>
                             <config_path>pbxep/merchant/hmackey</config_path>
                             <validate>required-entry</validate>
                             <sort_order>50</sort_order>
@@ -114,6 +115,7 @@
                             <label>Paybox Back Office password</label>
                             <comment><![CDATA[Back Office password provided by Paybox.]]></comment>
                             <frontend_type>text</frontend_type>
+                            <backend_model>pbxep/admin_backend_encrypted</backend_model>
                             <config_path>pbxep/merchant/password</config_path>
                             <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>

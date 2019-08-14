@@ -146,7 +146,7 @@ class Paybox_Epayment_Block_Info extends Mage_Payment_Block_Info {
 
     public function getPartialCaptureUrl() {
         $info = $this->getInfo();
-        return Mage::helper("adminhtml")->getUrl("/sales_order_invoice/start", array(
+        return Mage::helper("adminhtml")->getUrl("*/sales_order_invoice/start", array(
                     'order_id' => $info->getOrder()->getId(),
         ));
     }
@@ -154,7 +154,7 @@ class Paybox_Epayment_Block_Info extends Mage_Payment_Block_Info {
     public function getCaptureUrl() {
         $data = $this->getPayboxData();
         $info = $this->getInfo();
-        return Mage::helper("adminhtml")->getUrl("/pbxep/invoice", array(
+        return Mage::helper("adminhtml")->getUrl("*/pbxep/invoice", array(
                     'order_id' => $info->getOrder()->getId(),
                     'transaction' => $data['transaction'],
         ));
@@ -166,7 +166,7 @@ class Paybox_Epayment_Block_Info extends Mage_Payment_Block_Info {
         $invoices = $order->getInvoiceCollection();
         foreach ($invoices as $invoice) {
             if ($invoice->canRefund()) {
-                return Mage::helper("adminhtml")->getUrl("/sales_order_creditmemo/new", array(
+                return Mage::helper("adminhtml")->getUrl("*/sales_order_creditmemo/new", array(
                             'order_id' => $order->getId(),
                             'invoice_id' => $invoice->getId(),
                 ));

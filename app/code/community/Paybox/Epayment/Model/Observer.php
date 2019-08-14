@@ -32,6 +32,22 @@ class Paybox_Epayment_Model_Observer extends Mage_Core_Model_Observer
 		return $this;
 	}
 
+    public function logDebug($message) {
+        Mage::log($message, Zend_Log::DEBUG, 'paybox-epayment.log');
+    }
+
+    public function logWarning($message) {
+        Mage::log($message, Zend_Log::WARN, 'paybox-epayment.log');
+    }
+
+    public function logError($message) {
+        Mage::log($message, Zend_Log::ERR, 'paybox-epayment.log');
+    }
+
+    public function logFatal($message) {
+        Mage::log($message, Zend_Log::ALERT, 'paybox-epayment.log');
+    }
+
 	public function onAfterOrderSave($observer) {
 		// Find the order
 		$order = $observer->getEvent()->getOrder();
@@ -83,6 +99,8 @@ class Paybox_Epayment_Model_Observer extends Mage_Core_Model_Observer
 			return $this;
 		}
 
+        $this->logDebug(sprintf('Order %s: Automatic capture', $order->getIncrementId()));
+
 		$result = false;
 		$error = 'Unknown error';
 		try {
@@ -95,6 +113,7 @@ class Paybox_Epayment_Model_Observer extends Mage_Core_Model_Observer
 		if (!$result) {
 			$message = 'Automatic Paybox payment capture failed: %s.';
 			$message = $method->__($message, $error);
+	        $this->logDebug(sprintf('Order %s: Automatic capture - %s', $order->getIncrementId(), $message));
 			$status = $order->addStatusHistoryComment($message);
 			$status->save();
 		}

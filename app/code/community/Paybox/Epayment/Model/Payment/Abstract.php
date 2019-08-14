@@ -224,6 +224,7 @@ abstract class Paybox_Epayment_Model_Payment_Abstract extends Mage_Payment_Model
      */
     public function capture(Varien_Object $payment, $amount) {
         $order = $payment->getOrder();
+        $this->logDebug(sprintf('Order %s: Capture for %f', $order->getIncrementId(), $amount));
 
         // Currently processing a transaction ? Use it.
         if (!is_null($this->_processingTransaction)) {
@@ -274,9 +275,13 @@ abstract class Paybox_Epayment_Model_Payment_Abstract extends Mage_Payment_Model
             }
         }
 
+        $this->logDebug(sprintf('Order %s: Capture - transaction %d', $order->getIncrementId(), $txn->getTransactionId()));
+
         // Call Paybox Direct
         $paybox = $this->getPaybox();
+        $this->logDebug(sprintf('Order %s: Capture - calling directCapture with amount of %f', $order->getIncrementId(), $amount));
         $data = $paybox->directCapture($amount, $order, $txn);
+        $this->logDebug(sprintf('Order %s: Capture - response code %s', $order->getIncrementId(), $data['CODEREPONSE']));
 
         // Message
         if ($data['CODEREPONSE'] == '00000') {
@@ -287,6 +292,7 @@ abstract class Paybox_Epayment_Model_Payment_Abstract extends Mage_Payment_Model
             $close = false;
         }
         $data['status'] = $message;
+        $this->logDebug(sprintf('Order %s: Capture - %s', $order->getIncrementId(), $message));
 
         // Transaction
         $type = Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE;

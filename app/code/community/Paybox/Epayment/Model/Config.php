@@ -95,6 +95,7 @@ class Paybox_Epayment_Model_Config {
         throw new Exception('No function ' . $name);
     }
 
+
     public function getStore() {
         if (is_null($this->_store)) {
             $this->_store = Mage::app()->getStore();
@@ -115,6 +116,16 @@ class Paybox_Epayment_Model_Config {
             return $this->_urls[$type][$environment];
         }
         return array();
+    }
+
+    public function getHmacKey() {
+        $value = $this->_getConfigValue('pbxep/merchant/hmackey');
+        return Mage::helper('pbxep/encrypt')->decrypt($value);
+    }
+
+    public function getPassword() {
+        $value = $this->_getConfigValue('pbxep/merchant/password');
+        return Mage::helper('pbxep/encrypt')->decrypt($value);
     }
 
     public function getSystemUrls($environment = null) {

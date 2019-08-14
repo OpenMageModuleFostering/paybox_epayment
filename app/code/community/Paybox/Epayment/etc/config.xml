@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Paybox_Epayment>
-            <version>2.0.1</version>
+            <version>2.0.5</version>
         </Paybox_Epayment>
     </modules>
     <frontend>
@@ -154,8 +154,8 @@
                 <site>1999888</site>
                 <rank>77</rank>
                 <identifier>3262411</identifier>
-                <password>1999888I</password>
-                <hmackey>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF</hmackey>
+                <default_password>1999888I</default_password>
+                <default_hmackey>0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF</default_hmackey>
                 <hmacalgo>SHA512</hmacalgo>
                 <subscription>flexible</subscription>
             </merchant>
