@@ -1,3 +1,5 @@
+
+
 ## Original Package Description
 
 En une seule intégration, proposez de nombreux moyens de paiement, disposez d’une page de paiement sécurisée personnalisée, multi-langues et multi-devises et proposez du débit à validation de commande, à l’expédition ou encore en 3 fois sans frais à vos clients.

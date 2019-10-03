@@ -1,7 +1,7 @@
 {
-    "name": "OpenMageModuleFostering\/Paybox_epayment",
+    "name": "openmage-module-fostering\/paybox_epayment",
     "type": "magento-module",
-    "license": "Open-Software-License-(OSL-3.0)",
+    "license": "OSL-3.0",
     "homepage": "",
     "description": "En une seule int\u00e9gration, proposez de nombreux moyens de paiement, disposez d\u2019une page de paiement s\u00e9curis\u00e9e personnalis\u00e9e, multi-langues et multi-devises et proposez du d\u00e9bit \u00e0 validation de commande, \u00e0 l\u2019exp\u00e9dition ou encore en 3 fois sans frais \u00e0 vos clients.",
     "authors": [
